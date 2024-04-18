@@ -6,13 +6,13 @@
 #    By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/23 09:14:12 by nsouchal          #+#    #+#              #
-#    Updated: 2024/04/18 11:09:44 by nsouchal         ###   ########.fr        #
+#    Updated: 2024/04/18 13:17:42 by nsouchal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SRC_FILE = main.c
+SRC_FILE = main.c ft_atoi.c initialisation.c actions.c
 
 DIR_BUILD		=	.build/
 DIR_SRCS 		= 	srcs/
@@ -28,7 +28,7 @@ FLAGS		=	-Wall -Werror -Wextra -pthread
 CC = cc
 
 .PHONY: all
-all: libft $(NAME)
+all: $(NAME)
 
 $(NAME): $(OBJS)
 			$(CC) $(OBJS) -o $(NAME)

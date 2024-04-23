@@ -6,37 +6,77 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/18 15:15:27 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:10:18 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	initialize_params(t_params *params, char **argv, int argc)
+int	initialisation(t_main_struct *main_struct, int argc, char **argv)
+{
+	memset(main_struct->params, 0, sizeof(t_params));
+	if (initialize_params(main_struct->params, argv, argc))
+		return (1);
+	return (create_threads(main_struct));
+}
+
+void	intialize_philos(t_main_struct *main_struct)
+{
+	int	i;
+
+	i = 0;
+	while (i < main_struct->params->nb_philos)
+	{
+		main_struct->philos[i].params = main_struct->params
+	}
+}
+
+int	initialize_params(t_params *params, char **argv, int argc)
 {
 	params->nb_philos = ft_atoi(argv[1]);
 	params->time_to_die = ft_atoi(argv[2]);
 	params->time_to_eat = ft_atoi(argv[3]);
 	params->time_to_sleep = ft_atoi(argv[4]);
+	if (params->nb_philos <= 0 || params->nb_philos > 200 || \
+	params->time_to_die <= 0 || params->time_to_eat <= 0 || \
+	params->time_to_sleep <= 0)
+	{
+		printf("Bad arguments\n");
+		return (1);
+	}
 	if (argc == 6)
+	{
 		params->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
+		if (params->number_of_times_each_philosopher_must_eat < 0 || \
+		(params->number_of_times_each_philosopher_must_eat == 0 && \
+		ft_strncmp(argv[5], "0", 2)))
+		{
+			printf("Bad arguments\n");
+			return (1);
+		}
+	}
+	return (0);
 }
 
-void	create_threads(pthread_t *philos, t_params *params)
+int	create_threads(t_main_struct *main_struct)
 {
 	int	i;
 
-	i = 0;
-	philos = malloc(params->nb_philos * sizeof(pthread_t));
-	while (i < params->nb_philos)
+	i = -1;
+	main_struct->philos = malloc(main_struct->params->nb_philos * \
+	sizeof(t_philo));
+	if (!main_struct->philos)
+		return (free_all(main_struct, "Malloc error"));
+	while (++i < main_struct->params->nb_philos)
 	{
-		pthread_create(&philos[i], NULL, &actions, NULL);
-		i++;
+		if (pthread_create(&main_struct->philos[i].thread, NULL, &actions, NULL))
+			return (free_all(main_struct, "pthread_create problem"));
 	}
-	i = 0;
-	while (i < params->nb_philos)
+	i = -1;
+	while (++i < main_struct->params->nb_philos)
 	{
-		pthread_join(philos[i], NULL);
-		i++;
+		if (pthread_join(main_struct->philos[i].thread, NULL))
+			return (free_all(main_struct, "pthread_join problem"));
 	}
+	return (0);
 }

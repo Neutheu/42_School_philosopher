@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:02:23 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/18 13:59:41 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:58:41 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,27 @@ typedef struct s_params
 	int	number_of_times_each_philosopher_must_eat;
 } t_params;
 
+typedef struct s_philo
+{
+	pthread_t		thread;
+	int				position;
+	t_params		params;
+	pthread_mutex_t	fork;
+} t_philo;
+
+typedef struct s_main_struct
+{
+	t_params	*params;
+	t_philo		*philos;
+} t_main_struct;
+
 int		ft_atoi(const char *nptr);
-void	initialize_params(t_params *params, char **argv, int argc);
-void	create_threads(pthread_t *philos, t_params *params);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		initialisation(t_main_struct *main_struct, int argc, char **argv);
+int		initialize_params(t_params *params, char **argv, int argc);
+int		create_threads(t_main_struct *main_struct);
 void	*actions();
+int		free_all(t_main_struct *main_struct, char *message);
+size_t	get_current_time(void);
 
 #endif

@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 11:20:21 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/23 13:27:03 by nsouchal         ###   ########.fr       */
+/*   Created: 2023/11/15 08:19:39 by nsouchal          #+#    #+#             */
+/*   Updated: 2023/11/23 09:49:42 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/philo.h"
+#include <stddef.h>
 
-int	main(int argc, char **argv)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	t_main_struct	main_struct;
-	int				return_value;
+	size_t	i;
 
-	if (argc != 5 && argc != 6)
+	i = 0;
+	if (n == 0)
+		return (0);
+	while ((s1[i] || s2[i]) && i < n)
 	{
-		printf("Bad parameters entered\n");
-		return (1);
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
 	}
-	return_value = initialisation(&main_struct, argc, argv);
-	if (return_value)
-		return (return_value);
 	return (0);
 }

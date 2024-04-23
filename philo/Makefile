@@ -6,13 +6,14 @@
 #    By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/23 09:14:12 by nsouchal          #+#    #+#              #
-#    Updated: 2024/04/18 13:17:42 by nsouchal         ###   ########.fr        #
+#    Updated: 2024/04/23 14:30:14 by nsouchal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SRC_FILE = main.c ft_atoi.c initialisation.c actions.c
+SRC_FILE = main.c ft_atoi.c initialisation.c actions.c error.c ft_strncmp.c \
+		   utils.c
 
 DIR_BUILD		=	.build/
 DIR_SRCS 		= 	srcs/

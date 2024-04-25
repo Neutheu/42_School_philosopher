@@ -6,14 +6,14 @@
 #    By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/23 09:14:12 by nsouchal          #+#    #+#              #
-#    Updated: 2024/04/23 14:30:14 by nsouchal         ###   ########.fr        #
+#    Updated: 2024/04/25 14:30:15 by nsouchal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 SRC_FILE = main.c ft_atoi.c initialisation.c actions.c error.c ft_strncmp.c \
-		   utils.c
+		   utils.c threads.c all_time_check.c
 
 DIR_BUILD		=	.build/
 DIR_SRCS 		= 	srcs/
@@ -24,7 +24,7 @@ HEADERFILES		=	$(DIR_HEADERS)philo.h
 OBJS			=	$(patsubst %.c, $(DIR_BUILD)%.o, $(SRCS))
 SRCS			=	$(addprefix $(DIR_SRCS),$(SRC_FILE))
 
-FLAGS		=	-Wall -Werror -Wextra -pthread
+FLAGS		=	-Wall -Werror -Wextra -pthread -g3
 
 CC = cc
 

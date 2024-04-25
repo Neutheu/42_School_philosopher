@@ -1,32 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   all_time_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 11:20:21 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/24 17:04:49 by nsouchal         ###   ########.fr       */
+/*   Created: 2024/04/25 14:03:32 by nsouchal          #+#    #+#             */
+/*   Updated: 2024/04/25 14:30:31 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	main(int argc, char **argv)
+void	*all_time_check(void *arg)
 {
 	t_main_struct	main_struct;
+	size_t			timestamp;
+	int				i;
 
-	main_struct.starting_time = get_current_time();
-	if (argc != 5 && argc != 6)
+	i = 0;
+	main_struct = *(t_main_struct*)arg;
+	while (!check_dead_philo(&main_struct))
 	{
-		printf("Bad parameters entered\n");
-		return (1);
+		while (i < main_struct.params.nb_philos)
+		{
+			if (check_time_to_die(&main_struct.philos[i]))
+			{
+				timestamp = get_timestamp(&main_struct);
+				writing(&main_struct.philos[i], timestamp, "died");
+				set_philo_died(&main_struct);
+				break ;
+			}
+			i++;
+		}
+		i = 0;
 	}
-	if (initialisation(&main_struct, argc, argv))
-		return (1);
-	if (threads(&main_struct))
-		return (1);
-	if (destroy_mutex(&main_struct))
-		return (1);
-	return (0);
+	return (NULL);
 }

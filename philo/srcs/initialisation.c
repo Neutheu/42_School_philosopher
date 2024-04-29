@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/25 14:23:06 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:52:11 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,28 +40,24 @@ int	initialize_mutex(t_main_struct *main_struct)
 	{
 		if (pthread_mutex_init(&forks[i], NULL))
 			return (free_all(main_struct, "Fork_mutex init error"));
+		if (pthread_mutex_init(&main_struct->philos[i].last_meal, NULL))
+			return (free_all(main_struct, "Last_meal_mutex init error"));
 	}
 	if (pthread_mutex_init(&main_struct->writing, NULL))
 		return (free_all(main_struct, "Write_mutex init error"));
-	if (pthread_mutex_init(&main_struct->philo_died, NULL))
-		return (free_all(main_struct, "Philo_died_mutex init error"));
-	if (pthread_mutex_init(&main_struct->set_threads_ready, NULL))
-		return (free_all(main_struct, "Set_threads_ready_mutex init error"));
-	if (pthread_mutex_init(&main_struct->check_threads_ready, NULL))
-		return (free_all(main_struct, "Check_threads_ready_mutex init error"));
-	if (pthread_mutex_init(&main_struct->check_dead_philo, NULL))
-		return (free_all(main_struct, "Check_dead_philo_mutex init error"));
-	if (pthread_mutex_init(&main_struct->get_timestamp, NULL))
-		return (free_all(main_struct, "Get_timestamp_mutex init error"));
-	if (pthread_mutex_init(&main_struct->check_time_to_die, NULL))
-		return (free_all(main_struct, "Check_time_to_die_mutex init error"));
+	if (pthread_mutex_init(&main_struct->threads_ready, NULL))
+		return (free_all(main_struct, "Threads_ready_mutex init error"));
+	if (pthread_mutex_init(&main_struct->dead_philo_flag, NULL))
+		return (free_all(main_struct, "Dead_philo_flag_mutex init error"));
 	i = -1;
 	while (++i < main_struct->params.nb_philos)
 	{
 		main_struct->philos[i].left_fork = &forks[i];
 		if (i == 0)
+		{
 			main_struct->philos[i].right_fork = \
 			&forks[main_struct->params.nb_philos - 1];
+		}
 		else
 			main_struct->philos[i].right_fork = &forks[i - 1];
 	}

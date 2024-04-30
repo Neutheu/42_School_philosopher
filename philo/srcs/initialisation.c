@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/29 12:52:11 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/04/30 14:50:42 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	initialisation(t_main_struct *main_struct, int argc, char **argv)
 
 int	initialize_mutex(t_main_struct *main_struct)
 {
-	int	i;
+	int				i;
 	pthread_mutex_t	*forks;
 
 	i = -1;
@@ -42,6 +42,8 @@ int	initialize_mutex(t_main_struct *main_struct)
 			return (free_all(main_struct, "Fork_mutex init error"));
 		if (pthread_mutex_init(&main_struct->philos[i].last_meal, NULL))
 			return (free_all(main_struct, "Last_meal_mutex init error"));
+		if (pthread_mutex_init(&main_struct->philos[i].nb_meal_mutex, NULL))
+			return (free_all(main_struct, "Nb_meal_mutex init error"));
 	}
 	if (pthread_mutex_init(&main_struct->writing, NULL))
 		return (free_all(main_struct, "Write_mutex init error"));
@@ -52,14 +54,19 @@ int	initialize_mutex(t_main_struct *main_struct)
 	i = -1;
 	while (++i < main_struct->params.nb_philos)
 	{
-		main_struct->philos[i].left_fork = &forks[i];
+		main_struct->philos[i].left_fork_mutex = &forks[i];
 		if (i == 0)
 		{
-			main_struct->philos[i].right_fork = \
+			main_struct->philos[i].right_fork_mutex = \
 			&forks[main_struct->params.nb_philos - 1];
+			main_struct->philos[i].r_fork = \
+			&main_struct->philos[main_struct->params.nb_philos - 1].l_fork;
 		}
 		else
-			main_struct->philos[i].right_fork = &forks[i - 1];
+		{
+			main_struct->philos[i].right_fork_mutex = &forks[i - 1];
+			main_struct->philos[i].r_fork = main_struct->philos[i - 1].l_fork;
+		}
 	}
 	return (0);
 }
@@ -79,6 +86,8 @@ int	initialize_philos(t_main_struct *main_struct)
 		main_struct->philos[i].position = i + 1;
 		main_struct->philos[i].main_struct = main_struct;
 		main_struct->philos[i].time_last_meal = get_current_time();
+		main_struct->philos[i].nb_meal = 0;
+		main_struct->philos[i].l_fork = true;
 		i++;
 	}
 	return (0);
@@ -86,7 +95,7 @@ int	initialize_philos(t_main_struct *main_struct)
 
 int	initialize_params(t_params	*params, char **argv, int argc)
 {
-	memset(params, 0, sizeof(t_params));
+	memset(params, -1, sizeof(t_params));
 	params->nb_philos = ft_atoi(argv[1]);
 	params->time_to_die = ft_atoi(argv[2]);
 	params->time_to_eat = ft_atoi(argv[3]);

@@ -38,7 +38,7 @@ int	destroy_mutex(t_main_struct *main_struct)
 	i = 0;
 	while (i < main_struct->params.nb_philos)
 	{
-		if (pthread_mutex_destroy(&main_struct->forks[i]))
+		if (pthread_mutex_destroy(&main_struct->forks_mutex[i]))
 			return (free_all(main_struct, "Fork_mutex destroy problem"));
 		if (pthread_mutex_destroy(&main_struct->philos[i].last_meal))
 			return (free_all(main_struct, "Last_meal_mutex destroy problem"));
@@ -56,17 +56,21 @@ int	destroy_mutex(t_main_struct *main_struct)
 	return (0);
 }
 
-void	writing_death(t_philo *philo, size_t timestamp, char *message)
+void	writing_death(t_philo *philo, char *message)
 {
 	pthread_mutex_lock(&philo->main_struct->writing);
-	printf("%zu %d %s\n", timestamp, philo->position, message);
-	set_philo_died(philo->main_struct);
+	if (!check_dead_philo(philo->main_struct))
+		printf("%zu %d %s\n", get_current_time() - \
+		philo->main_struct->starting_time , philo->position, message);
 	pthread_mutex_unlock(&philo->main_struct->writing);
+	set_philo_died(philo->main_struct);
 }
 
-void	writing(t_philo *philo, size_t timestamp, char *message)
+void	writing(t_philo *philo, char *message)
 {
 	pthread_mutex_lock(&philo->main_struct->writing);
-	printf("%zu %d %s\n", timestamp, philo->position, message);
+	if (!check_dead_philo(philo->main_struct))
+		printf("%zu %d %s\n", get_current_time() - \
+		philo->main_struct->starting_time , philo->position, message);
 	pthread_mutex_unlock(&philo->main_struct->writing);
 }

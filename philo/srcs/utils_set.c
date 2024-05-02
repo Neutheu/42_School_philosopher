@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 12:34:16 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/30 12:39:00 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/02 14:04:20 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,26 @@ void	set_nb_meal(t_philo *philo)
 	pthread_mutex_lock(&philo->nb_meal_mutex);
 	philo->nb_meal++;
 	pthread_mutex_unlock(&philo->nb_meal_mutex);
+}
+
+void	set_forks_state(t_philo *philo, int true_or_false, int right_or_left)
+{
+	if (!right_or_left)
+	{
+		pthread_mutex_lock(philo->left_fork_mutex);
+		if (true_or_false)
+			*philo->l_fork = true;
+		else
+			*philo->l_fork = false;
+		pthread_mutex_unlock(philo->left_fork_mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork_mutex);
+		if (true_or_false)
+			*philo->r_fork = true;
+		else
+			*philo->r_fork = false;
+		pthread_mutex_unlock(philo->right_fork_mutex);
+	}
 }

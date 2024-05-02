@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 14:03:32 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/30 12:32:30 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/02 15:18:15 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	*all_time_check(void *arg)
 	t_main_struct	*main_struct;
 	int				i;
 
-	usleep(500);
+	ft_usleep(2);
 	i = 0;
 	main_struct = (t_main_struct *)arg;
 	if (main_struct->params.nb_philos != 1)
@@ -29,8 +29,7 @@ void	*all_time_check(void *arg)
 			{
 				if (check_time_to_die(&main_struct->philos[i]))
 				{
-					writing_death(&main_struct->philos[i], \
-					get_current_time() - main_struct->starting_time, "died");
+					writing_death(&main_struct->philos[i], "died");
 					return (NULL);
 				}
 				i++;
@@ -50,6 +49,7 @@ void	check_must_eat(t_main_struct *main_struct)
 	{
 		while (i < main_struct->params.nb_philos)
 		{
+			usleep(10);
 			pthread_mutex_lock(&main_struct->philos[i].nb_meal_mutex);
 			if (main_struct->params.number_of_times_each_philosopher_must_eat > \
 			main_struct->philos[i].nb_meal)

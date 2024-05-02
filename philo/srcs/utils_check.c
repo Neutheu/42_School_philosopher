@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 12:33:09 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/30 15:00:25 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/02 14:04:28 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,24 @@ int	check_time_to_die(t_philo *philo)
 	return (result);
 }
 
-int	check_fork(t_philo *philo)
+int	check_fork(t_philo *philo, int right_or_left)
 {
-	int
+	int	result;
+
+	result = 0;
+	if (!right_or_left)
+	{
+		pthread_mutex_lock(philo->left_fork_mutex);
+		if (*philo->l_fork)
+			result = 1;
+		pthread_mutex_unlock(philo->left_fork_mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork_mutex);
+		if (*philo->r_fork)
+			result = 1;
+		pthread_mutex_unlock(philo->right_fork_mutex);
+	}
+	return (result);
 }

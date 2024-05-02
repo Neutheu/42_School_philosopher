@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:20:21 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/26 12:46:05 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/02 14:45:42 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	main(int argc, char **argv)
 {
 	t_main_struct	main_struct;
 
-	main_struct.starting_time = get_current_time();
 	if (argc != 5 && argc != 6)
 	{
 		printf("Bad parameters entered\n");

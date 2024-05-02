@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:17:23 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/04/30 15:05:59 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/02 15:25:33 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ void	*actions(void *arg)
 		if (philo->position % 2)
 		{
 			thinking(philo);
-			eating_odd(philo);
+			eating_even(philo);
 			sleeping(philo);
 		}
 		else
 		{
-			eating_odd(philo);
+			eating_even(philo);
 			sleeping(philo);
 			thinking(philo);
 		}
@@ -41,38 +41,54 @@ void	*actions(void *arg)
 
 void	eating_even(t_philo *philo)
 {
-	/*
-		- checker premiere fourchette avec son mutex
-		- checker deuxieme
-		- checker tant quelles sont pas dispos
-		- set les fourchette a false
-		- manger
-		- set les fourchettes a true
-	*/
+	while (!philo->l_fork_taken || !philo->r_fork_taken)
+	{
+		if (!philo->r_fork_taken)
+		{
+			usleep(10);
+			if (check_fork(philo, 1))
+			{
+				set_forks_state(philo, 0, 1);
+				philo->r_fork_taken = true;
+				writing(philo, "has taken a fork");
+			}
+		}
+		if (!philo->l_fork_taken)
+		{
+			usleep(10);
+			if (check_fork(philo, 0))
+			{
+				set_forks_state(philo, 0, 0);
+				philo->l_fork_taken = true;
+				writing(philo, "has taken a fork");
+			}
+		}
+	}
+	set_time_last_meal(philo);
+	writing(philo, "is eating");
+	ft_usleep(philo->main_struct->params.time_to_eat);
+	set_nb_meal(philo);
+	set_forks_state(philo, 1, 0);
+	set_forks_state(philo, 1, 1);
+	philo->l_fork_taken = false;
+	philo->r_fork_taken = false;
 }
 
 void	eating_odd(t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork_mutex);
-	if (!check_dead_philo(philo->main_struct))
-		writing(philo, get_current_time() - philo->main_struct->starting_time, \
-		"has taken a fork");
+	writing(philo, "has taken a fork");
 	if (philo->main_struct->params.nb_philos == 1)
 	{
 		ft_usleep(philo->main_struct->params.time_to_die);
-		writing_death(philo, get_current_time() - \
-		philo->main_struct->starting_time, "died");
+		writing_death(philo, "died");
 		pthread_mutex_unlock(philo->right_fork_mutex);
 		return ;
 	}
 	pthread_mutex_lock(philo->left_fork_mutex);
-	if (!check_dead_philo(philo->main_struct))
-		writing(philo, get_current_time() - philo->main_struct->starting_time, \
-		"has taken a fork");
+	writing(philo, "has taken a fork");
 	set_time_last_meal(philo);
-	if (!check_dead_philo(philo->main_struct))
-		writing(philo, get_current_time() - philo->main_struct->starting_time, \
-		"is eating");
+	writing(philo, "is eating");
 	ft_usleep(philo->main_struct->params.time_to_eat);
 	set_nb_meal(philo);
 	pthread_mutex_unlock(philo->right_fork_mutex);
@@ -81,17 +97,13 @@ void	eating_odd(t_philo *philo)
 
 void	thinking(t_philo *philo)
 {
-	ft_usleep(1);
-	if (!check_dead_philo(philo->main_struct))
-		writing(philo, get_current_time() - philo->main_struct->starting_time, \
-		"is thinking");
+	writing(philo, "is thinking");
+	usleep(500);
 }
 
 void	sleeping(t_philo *philo)
 {
-	if (!check_dead_philo(philo->main_struct))
-		writing(philo, get_current_time() - philo->main_struct->starting_time, \
-		"is sleeping");
+	writing(philo, "is sleeping");
 	ft_usleep(philo->main_struct->params.time_to_sleep);
 }
 

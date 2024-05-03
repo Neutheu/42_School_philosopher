@@ -6,7 +6,7 @@
 #    By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/23 09:14:12 by nsouchal          #+#    #+#              #
-#    Updated: 2024/05/02 14:21:52 by nsouchal         ###   ########.fr        #
+#    Updated: 2024/05/03 12:07:51 by nsouchal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEADERFILES		=	$(DIR_HEADERS)philo.h
 OBJS			=	$(patsubst %.c, $(DIR_BUILD)%.o, $(SRCS))
 SRCS			=	$(addprefix $(DIR_SRCS),$(SRC_FILE))
 
-FLAGS		=	-Wall -Werror -Wextra -pthread -g3
+FLAGS		=	-Wall -Werror -Wextra -pthread -g3 -O3
 
 CC = cc
 

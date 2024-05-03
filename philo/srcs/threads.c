@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 10:05:36 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/02 15:21:49 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/03 10:05:19 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	threads(t_main_struct *main_struct)
 	int	i;
 
 	i = -1;
-	while (++i < main_struct->params.nb_philos)
+	while (++i < main_struct->param.nb_philos)
 	{
 		if (pthread_create(&main_struct->philos[i].thread, NULL, &actions, \
 		&main_struct->philos[i]))
@@ -29,7 +29,7 @@ int	threads(t_main_struct *main_struct)
 	main_struct->starting_time = get_current_time();
 	set_all_threads_ready(main_struct);
 	i = -1;
-	while (++i < main_struct->params.nb_philos)
+	while (++i < main_struct->param.nb_philos)
 	{
 		if (pthread_join(main_struct->philos[i].thread, NULL))
 			return (free_all(main_struct, "Philo_pthread_join problem"));

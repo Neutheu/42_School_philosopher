@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:17:23 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/02 15:25:33 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/03 12:12:05 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,22 @@ void	*actions(void *arg)
 	philo = (t_philo *)arg;
 	while (!check_all_threads_ready(philo->main_struct))
 		;
+	philo->time_last_meal = get_current_time();
+	if (philo->main_struct->param.nb_philos == 1)
+		solo_philo(philo);
 	if (philo->position % 2)
-		usleep(100);
+		ft_usleep(3);
 	while (!check_dead_philo(philo->main_struct))
 	{
 		if (philo->position % 2)
 		{
 			thinking(philo);
-			eating_even(philo);
+			eating(philo);
 			sleeping(philo);
 		}
 		else
 		{
-			eating_even(philo);
+			eating(philo);
 			sleeping(philo);
 			thinking(philo);
 		}
@@ -39,71 +42,58 @@ void	*actions(void *arg)
 	return (NULL);
 }
 
-void	eating_even(t_philo *philo)
+void	eating(t_philo *philo)
 {
 	while (!philo->l_fork_taken || !philo->r_fork_taken)
 	{
+		usleep(50);
 		if (!philo->r_fork_taken)
 		{
-			usleep(10);
-			if (check_fork(philo, 1))
-			{
-				set_forks_state(philo, 0, 1);
-				philo->r_fork_taken = true;
+			if(check_fork_and_set(philo, 1))
 				writing(philo, "has taken a fork");
-			}
 		}
 		if (!philo->l_fork_taken)
 		{
-			usleep(10);
-			if (check_fork(philo, 0))
-			{
-				set_forks_state(philo, 0, 0);
-				philo->l_fork_taken = true;
+			if(check_fork_and_set(philo, 0))
 				writing(philo, "has taken a fork");
-			}
 		}
 	}
-	set_time_last_meal(philo);
 	writing(philo, "is eating");
-	ft_usleep(philo->main_struct->params.time_to_eat);
-	set_nb_meal(philo);
-	set_forks_state(philo, 1, 0);
-	set_forks_state(philo, 1, 1);
+	pthread_mutex_lock(&philo->last_meal);
+	philo->time_last_meal = get_current_time();
+	pthread_mutex_unlock(&philo->last_meal);
+	ft_usleep(philo->main_struct->param.time_to_eat);
+	pthread_mutex_lock(&philo->nb_meal_mutex);
+	philo->nb_meal++;
+	pthread_mutex_unlock(&philo->nb_meal_mutex);
+	set_forks_state(philo);
 	philo->l_fork_taken = false;
 	philo->r_fork_taken = false;
 }
 
-void	eating_odd(t_philo *philo)
+void	solo_philo(t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork_mutex);
 	writing(philo, "has taken a fork");
-	if (philo->main_struct->params.nb_philos == 1)
-	{
-		ft_usleep(philo->main_struct->params.time_to_die);
-		writing_death(philo, "died");
-		pthread_mutex_unlock(philo->right_fork_mutex);
-		return ;
-	}
-	pthread_mutex_lock(philo->left_fork_mutex);
-	writing(philo, "has taken a fork");
-	set_time_last_meal(philo);
-	writing(philo, "is eating");
-	ft_usleep(philo->main_struct->params.time_to_eat);
-	set_nb_meal(philo);
-	pthread_mutex_unlock(philo->right_fork_mutex);
-	pthread_mutex_unlock(philo->left_fork_mutex);
+	ft_usleep(philo->main_struct->param.time_to_die);
+	writing_death(philo, "died");
 }
 
 void	thinking(t_philo *philo)
 {
-	writing(philo, "is thinking");
-	usleep(500);
+	pthread_mutex_lock(&philo->main_struct->writing);
+	if (!check_dead_philo(philo->main_struct))
+		printf("%zu %d %s\n", get_current_time() - \
+		philo->main_struct->starting_time, philo->position, "is thinking");
+	pthread_mutex_unlock(&philo->main_struct->writing);
+	ft_usleep(1);
 }
 
 void	sleeping(t_philo *philo)
 {
-	writing(philo, "is sleeping");
-	ft_usleep(philo->main_struct->params.time_to_sleep);
+	pthread_mutex_lock(&philo->main_struct->writing);
+	if (!check_dead_philo(philo->main_struct))
+		printf("%zu %d %s\n", get_current_time() - \
+		philo->main_struct->starting_time, philo->position, "is sleeping");
+	pthread_mutex_unlock(&philo->main_struct->writing);
+	ft_usleep(philo->main_struct->param.time_to_sleep);
 }
-

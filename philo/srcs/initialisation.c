@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/03 12:05:46 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/07 10:22:07 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,21 @@
 
 int	initialisation(t_main_struct *main_struct, int argc, char **argv)
 {
-	main_struct->all_threads_created = 0;
 	main_struct->dead_philo = 0;
+	main_struct->forks = NULL;
+	main_struct->forks_mutex = NULL;
+	main_struct->philos = NULL;
 	if (initialize_param(&main_struct->param, argv, argc))
 		return (1);
 	if (initialize_philos(main_struct))
 		return (1);
+	main_struct->forks_mutex = malloc(main_struct->param.nb_philos * \
+	sizeof(pthread_mutex_t));
+	if (!main_struct->forks_mutex)
+		return (free_all(main_struct, "Malloc error"));
+	main_struct->forks = malloc(main_struct->param.nb_philos * sizeof(bool));
+	if (!main_struct->forks)
+		return (free_all(main_struct, "Malloc error"));
 	if (initialize_mutex(main_struct))
 		return (1);
 	return (0);
@@ -56,16 +65,9 @@ void	distribute_forks(t_main_struct *main_struct)
 
 int	initialize_mutex(t_main_struct *main_struct)
 {
-	int				i;
+	int	i;
 
 	i = -1;
-	main_struct->forks_mutex = malloc(main_struct->param.nb_philos * \
-	sizeof(pthread_mutex_t));
-	if (!main_struct->forks_mutex)
-		return (free_all(main_struct, "Malloc error"));
-	main_struct->forks = malloc(main_struct->param.nb_philos * sizeof(bool));
-	if (!main_struct->forks)
-		return (free_all(main_struct, "Malloc error"));
 	while (++i < main_struct->param.nb_philos)
 	{
 		if (pthread_mutex_init(&main_struct->forks_mutex[i], NULL))
@@ -74,38 +76,16 @@ int	initialize_mutex(t_main_struct *main_struct)
 			return (free_all(main_struct, "Last_meal_mutex init error"));
 		if (pthread_mutex_init(&main_struct->philos[i].nb_meal_mutex, NULL))
 			return (free_all(main_struct, "Nb_meal_mutex init error"));
+		if (pthread_mutex_init(&main_struct->philos[i].thread_ready, NULL))
+			return (free_all(main_struct, "Thread_ready_mutex init error"));
+		pthread_mutex_lock(&main_struct->philos[i].thread_ready);
 		main_struct->forks[i] = true;
 	}
 	if (pthread_mutex_init(&main_struct->writing, NULL))
 		return (free_all(main_struct, "Write_mutex init error"));
-	if (pthread_mutex_init(&main_struct->threads_ready, NULL))
-		return (free_all(main_struct, "Threads_ready_mutex init error"));
 	if (pthread_mutex_init(&main_struct->dead_philo_flag, NULL))
 		return (free_all(main_struct, "Dead_philo_flag_mutex init error"));
-	i = -1;
-	while (++i < main_struct->param.nb_philos)
-	{
-		main_struct->philos[i].left_fork_mtx = &main_struct->forks_mutex[i];
-		main_struct->philos[i].l_fork = &main_struct->forks[i];
-	}
-	i = -1;
-	while (++i < main_struct->param.nb_philos)
-	{
-		if (i == 0)
-		{
-			main_struct->philos[i].right_fork_mtx = \
-			main_struct->philos[main_struct->param.nb_philos - 1].\
-			left_fork_mtx;
-			main_struct->philos[i].r_fork = \
-			main_struct->philos[main_struct->param.nb_philos - 1].l_fork;
-		}
-		else
-		{
-			main_struct->philos[i].right_fork_mtx = \
-			main_struct->philos[i - 1].left_fork_mtx;
-			main_struct->philos[i].r_fork = main_struct->philos[i - 1].l_fork;
-		}
-	}
+	distribute_forks(main_struct);
 	return (0);
 }
 
@@ -114,7 +94,6 @@ int	initialize_philos(t_main_struct *main_struct)
 	int	i;
 
 	i = 0;
-	main_struct->philos = NULL;
 	main_struct->philos = malloc(main_struct->param.nb_philos * \
 	sizeof(t_philo));
 	if (!main_struct->philos)
@@ -140,7 +119,7 @@ int	initialize_param(t_param	*param, char **argv, int argc)
 	param->time_to_die = ft_atoi(argv[2]);
 	param->time_to_eat = ft_atoi(argv[3]);
 	param->time_to_sleep = ft_atoi(argv[4]);
-	if (param->nb_philos <= 0 || param->nb_philos > 200 || \
+	if (param->nb_philos <= 0 || \
 	param->time_to_die <= 0 || param->time_to_eat <= 0 || \
 	param->time_to_sleep <= 0)
 	{

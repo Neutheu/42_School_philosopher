@@ -6,18 +6,11 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 12:34:16 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/03 12:02:35 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/07 10:17:48 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
-
-void	set_all_threads_ready(t_main_struct *main_struct)
-{
-	pthread_mutex_lock(&main_struct->threads_ready);
-	main_struct->all_threads_created = 1;
-	pthread_mutex_unlock(&main_struct->threads_ready);
-}
 
 void	set_philo_died(t_main_struct *main_struct)
 {
@@ -33,19 +26,24 @@ void	set_time_last_meal(t_philo *philo)
 	pthread_mutex_unlock(&philo->last_meal);
 }
 
-void	set_nb_meal(t_philo *philo)
+void	set_and_check_nb_meal(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->nb_meal_mutex);
 	philo->nb_meal++;
+	if (philo->nb_meal == philo->main_struct->\
+	param.number_of_times_each_philosopher_must_eat)
+	{
+		pthread_mutex_unlock(&philo->nb_meal_mutex);
+		pthread_mutex_lock(&philo->main_struct->enough_meal);
+		philo->main_struct->nb_philo_enough_meal++;
+		pthread_mutex_unlock(&philo->main_struct->enough_meal);
+		return ;
+	}
 	pthread_mutex_unlock(&philo->nb_meal_mutex);
 }
 
-void	set_forks_state(t_philo *philo)
+void	wait_to_start(t_philo *philo)
 {
-	pthread_mutex_lock(philo->left_fork_mtx);
-	*philo->l_fork = true;
-	pthread_mutex_unlock(philo->left_fork_mtx);
-	pthread_mutex_lock(philo->right_fork_mtx);
-	*philo->r_fork = true;
-	pthread_mutex_unlock(philo->right_fork_mtx);
+	pthread_mutex_lock(&philo->thread_ready);
+	pthread_mutex_unlock(&philo->thread_ready);
 }

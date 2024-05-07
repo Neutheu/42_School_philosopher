@@ -27,7 +27,7 @@ int	ft_usleep(size_t milliseconds)
 
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
-		usleep(5);
+		usleep(500);
 	return (0);
 }
 
@@ -44,24 +44,24 @@ int	destroy_mutex(t_main_struct *main_struct)
 			return (free_all(main_struct, "Last_meal_mutex destroy problem"));
 		if (pthread_mutex_destroy(&main_struct->philos[i].nb_meal_mutex))
 			return (free_all(main_struct, "Nb_meal_mutex destroy problem"));
+		if (pthread_mutex_destroy(&main_struct->philos[i].thread_ready))
+			return (free_all(main_struct, "Thrd_ready_mutex destroy problem"));
 		i++;
 	}
 	if (pthread_mutex_destroy(&main_struct->writing))
 		return (free_all(main_struct, "Write_mutex destroy problem"));
 	if (pthread_mutex_destroy(&main_struct->dead_philo_flag))
 		return (free_all(main_struct, "CheckDeadPhilo_mutex destroy problem"));
-	if (pthread_mutex_destroy(&main_struct->threads_ready))
-		return (free_all(main_struct, "ThreadsReady_mutex destroy problem"));
 	free_all(main_struct, NULL);
 	return (0);
 }
 
-void	writing_death(t_philo *philo, char *message)
+void	writing_death(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->main_struct->writing);
 	if (!check_dead_philo(philo->main_struct))
-		printf("%zu %d %s\n", get_current_time() - \
-		philo->main_struct->starting_time, philo->position, message);
+		printf("%zu %d died\n", get_current_time() - \
+		philo->main_struct->starting_time, philo->position);
 	set_philo_died(philo->main_struct);
 	pthread_mutex_unlock(&philo->main_struct->writing);
 }

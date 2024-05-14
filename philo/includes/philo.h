@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:02:23 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/07 10:20:56 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:24:50 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef struct s_param
 	int	time_to_die;
 	int	time_to_eat;
 	int	time_to_sleep;
-	int	number_of_times_each_philosopher_must_eat;
+	int	number_of_times_each_philo_must_eat;
 }	t_param;
 
 typedef struct s_philo

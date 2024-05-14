@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:17:23 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/07 10:09:37 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:27:12 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,10 @@ void	eating(t_philo *philo)
 	philo->time_last_meal = get_current_time();
 	pthread_mutex_unlock(&philo->last_meal);
 	ft_usleep(philo->main_struct->param.time_to_eat);
-	set_and_check_nb_meal(philo);
-	check_enough_meal(philo->main_struct);
+	if (philo->main_struct->param.number_of_times_each_philo_must_eat != -1)
+		set_and_check_nb_meal(philo);
+	if (philo->main_struct->param.number_of_times_each_philo_must_eat != -1)
+		check_enough_meal(philo->main_struct);
 	pthread_mutex_lock(philo->left_fork_mtx);
 	*philo->l_fork = true;
 	pthread_mutex_unlock(philo->left_fork_mtx);

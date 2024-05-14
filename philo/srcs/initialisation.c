@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/07 10:22:07 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:26:55 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,9 +128,9 @@ int	initialize_param(t_param	*param, char **argv, int argc)
 	}
 	if (argc == 6)
 	{
-		param->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
-		if (param->number_of_times_each_philosopher_must_eat < 0 || \
-		(param->number_of_times_each_philosopher_must_eat == 0 && \
+		param->number_of_times_each_philo_must_eat = ft_atoi(argv[5]);
+		if (param->number_of_times_each_philo_must_eat < 0 || \
+		(param->number_of_times_each_philo_must_eat == 0 && \
 		ft_strncmp(argv[5], "0", 2)))
 		{
 			printf("Bad arguments\n");

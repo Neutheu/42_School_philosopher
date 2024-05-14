@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 12:34:16 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/07 10:17:48 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:26:55 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	set_and_check_nb_meal(t_philo *philo)
 	pthread_mutex_lock(&philo->nb_meal_mutex);
 	philo->nb_meal++;
 	if (philo->nb_meal == philo->main_struct->\
-	param.number_of_times_each_philosopher_must_eat)
+	param.number_of_times_each_philo_must_eat)
 	{
 		pthread_mutex_unlock(&philo->nb_meal_mutex);
 		pthread_mutex_lock(&philo->main_struct->enough_meal);

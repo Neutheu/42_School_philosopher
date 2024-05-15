@@ -6,7 +6,7 @@
 /*   By: nsouchal <nsouchal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 11:42:04 by nsouchal          #+#    #+#             */
-/*   Updated: 2024/05/14 09:26:55 by nsouchal         ###   ########.fr       */
+/*   Updated: 2024/05/14 15:13:09 by nsouchal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	initialisation(t_main_struct *main_struct, int argc, char **argv)
 	main_struct->forks = NULL;
 	main_struct->forks_mutex = NULL;
 	main_struct->philos = NULL;
+	main_struct->nb_philo_enough_meal = 0;
 	if (initialize_param(&main_struct->param, argv, argc))
 		return (1);
 	if (initialize_philos(main_struct))
@@ -85,6 +86,8 @@ int	initialize_mutex(t_main_struct *main_struct)
 		return (free_all(main_struct, "Write_mutex init error"));
 	if (pthread_mutex_init(&main_struct->dead_philo_flag, NULL))
 		return (free_all(main_struct, "Dead_philo_flag_mutex init error"));
+	if (pthread_mutex_init(&main_struct->enough_meal, NULL))
+		return (free_all(main_struct, "Enough_meal_mutex init error"));
 	distribute_forks(main_struct);
 	return (0);
 }

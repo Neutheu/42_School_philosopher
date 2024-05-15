@@ -52,6 +52,8 @@ int	destroy_mutex(t_main_struct *main_struct)
 		return (free_all(main_struct, "Write_mutex destroy problem"));
 	if (pthread_mutex_destroy(&main_struct->dead_philo_flag))
 		return (free_all(main_struct, "CheckDeadPhilo_mutex destroy problem"));
+	if (pthread_mutex_destroy(&main_struct->enough_meal))
+		return (free_all(main_struct, "Enough_meal_mutex destroy problem"));
 	free_all(main_struct, NULL);
 	return (0);
 }
